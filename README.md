@@ -9,7 +9,9 @@ model is the VGG19_bn without the two 4096 fc layer from torchvision
 1.train with sparsity from scratch
 epoch and learning_rate:
 1-80 0.001
+
 81-120 0.0001
+
 121-160 0.00001
 ```shell
 python main_train.py --sparsity_lambda 0.0001  # 
