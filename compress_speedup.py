@@ -4,15 +4,13 @@ import torch.nn as nn
 from torchsummary import summary
 from torchvision import datasets, transforms
 import time
-import sys
-sys.path.append(r'D:\行为识别\pytorch-cifar-master')
 
 from nni.compression.pytorch import ModelSpeedup, apply_compression_results
 
 def test(model):
     model.eval()
     test_loader = torch.utils.data.DataLoader(
-            torchvision.datasets.CIFAR10('./data', train=False, transform=transforms.Compose([
+            torchvision.datasets.CIFAR10('../data', train=False, transform=transforms.Compose([
                                transforms.ToTensor(),
                                transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))
                            ])),
@@ -28,36 +26,35 @@ def test(model):
         
     # 正确数量/总数量
     test_acc = test_acc / float(len(test_loader.dataset))
-    return test_acc
+    return test_acc.item()
+
+dummy_input = torch.ones([64,3,32,32]).cuda()
 
 model = torchvision.models.vgg19_bn(num_classes=10)
 model.avgpool = nn.AdaptiveAvgPool2d((1, 1))
 model.classifier = nn.Linear(512, 10)
-model.load_state_dict(torch.load(r'prune/pruned_vgg19_cifar10.pth'))
+model.load_state_dict(torch.load('pruned_vgg19_cifar10.pth'))
 model.cuda()
-
-print(test(model))
-
-dummy_input = torch.ones([64,3,32,32]).cuda()
+model.eval()
+model(dummy_input) #first time infer will cost much time
 
 # mask
 use_mask_out = use_speedup_out = None
-apply_compression_results(model, 'prune/mask_vgg19_cifar10.pth')
+apply_compression_results(model, 'mask_vgg19_cifar10.pth')
 start = time.time()
-for _ in range(32):
+for _ in range(320):
     use_mask_out = model(dummy_input)
 print('elapsed time when use mask: ', time.time() - start)
 print(test(model))
 
 
 # speedup
-m_speedup = ModelSpeedup(model, dummy_input, 'prune/mask_vgg19_cifar10.pth')
+m_speedup = ModelSpeedup(model, dummy_input, 'mask_vgg19_cifar10.pth')
 m_speedup.speedup_model()
 start = time.time()
-for _ in range(32):
+for _ in range(320):
     use_speedup_out = model(dummy_input)
 print('elapsed time when use speedup: ', time.time() - start)
-
 print(test(model))
 
 # 确定两输出是一致的
