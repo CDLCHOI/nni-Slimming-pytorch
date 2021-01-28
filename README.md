@@ -11,10 +11,14 @@ epoch and learning_rate:
 1-80 0.001
 81-120 0.0001
 121-160 0.00001
-## python main_train.py --sparsity_lambda 0.0001     
+```shell
+python main_train.py --sparsity_lambda 0.0001  # 
+```
 
+```shell
+python prune_slimming.py
+```
 
-## python prune_slimming.py
-
-
-## python compress_speedup.py
+```shell
+python compress_speedup.py
+```
