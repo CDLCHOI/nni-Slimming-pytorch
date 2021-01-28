@@ -106,6 +106,10 @@ def train(epoch):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser("XXXXXXXXXXXXXXXXX")
+    parser.add_argument('--pretrain_weights', type=str, default=0)
+    parser.add_argument('--original_model', type=str, default='../snapshots/vgg_cifar10_sparse_epoch_159.pth')
+    parser.add_argument('--pruned_model', type=str, default='../snapshots/pruned_vgg19_cifar10.pth')
+    parser.add_argument('--mask_file', type=str, default='../snapshots/mask_vgg19_cifar10.pth')
     args = parser.parse_args()
 
     train_loader = torch.utils.data.DataLoader(
@@ -132,7 +136,7 @@ if __name__ == '__main__':
     model = torchvision.models.vgg19_bn(num_classes=10)
     model.avgpool = nn.AdaptiveAvgPool2d((1, 1))
     model.classifier = nn.Linear(512, 10)
-    model.load_state_dict(torch.load(r'D:\code\python\snapshots\vgg_cifar10_sparse_epoch_159.pth'))
+    model.load_state_dict(torch.load(args.original_model))
     
     #测试基本模型的准确率
     print_and_write_with_time('===Testing Original Model===')
@@ -165,7 +169,7 @@ if __name__ == '__main__':
         
         if test_acc > best_top1:
             best_top1 = test_acc
-            pruner.export_model(model_path='pruned_vgg19_cifar10.pth', mask_path='mask_vgg19_cifar10.pth')
+            pruner.export_model(model_path=args.pruned_model, mask_path=args.mask_file)
             print_and_write('save checkpoint', log_file)
             
     #测试导出的模型
@@ -174,7 +178,7 @@ if __name__ == '__main__':
     new_model.avgpool = nn.AdaptiveAvgPool2d((1, 1))
     new_model.classifier = nn.Linear(512, 10)
     new_model.cuda()
-    new_model.load_state_dict(torch.load('pruned_vgg19_cifar10.pth'))
+    new_model.load_state_dict(torch.load(args.pruned_model))
     test(new_model)
     
 
