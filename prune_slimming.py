@@ -106,7 +106,6 @@ def train(epoch):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser("XXXXXXXXXXXXXXXXX")
-    parser.add_argument('--pretrain_weights', type=str, default=0)
     parser.add_argument('--original_model', type=str, default='../snapshots/vgg_cifar10_sparse_epoch_159.pth')
     parser.add_argument('--pruned_model', type=str, default='../snapshots/pruned_vgg19_cifar10.pth')
     parser.add_argument('--mask_file', type=str, default='../snapshots/mask_vgg19_cifar10.pth')
