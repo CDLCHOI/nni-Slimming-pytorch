@@ -20,7 +20,7 @@ epoch and learning_rate:
 python main_train.py --sparsity_lambda 0.0001  # 
 ```
 
-### 2.simulated prune, same computation cost
+### 2.simulated prune and finetune, same computation cost
 ```shell
 python prune_slimming.py
 ```
