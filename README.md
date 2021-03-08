@@ -1,7 +1,9 @@
 # nni-Slimming-pytorch
 
 pytorch 1.7.1+cu110
+
 torchvision 0.8.2+cu110
+
 nni 2.0
 
 model is the VGG19_bn without the two 4096 fc layer from torchvision
